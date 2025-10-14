@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 from app.infrastructure.database.models.base import Base
 
-class DailyTimePosturesModel(Base):
+class WeeklyTimePosturesModel(Base):
     __tablename__ = "TiempoPosturasDiarias"
 
     id_student = Column(String(128), nullable=False, primary_key=True)
@@ -12,6 +12,6 @@ class DailyTimePosturesModel(Base):
     year = Column(Integer, nullable=False)
     week = Column(Integer, nullable=False)
     month = Column(Integer, nullable=False)
-    total_time = Column(Numeric(10, 2), nullable=False)
-    bad_posture_time = Column(Numeric(10, 2), nullable=False)
-    good_posture_time = Column(Numeric(10, 2), nullable=False)
+    total_time = Column(Numeric, nullable=False)
+    bad_posture_time = Column(Numeric, nullable=False)
+    good_posture_time = Column(Numeric, nullable=False)
