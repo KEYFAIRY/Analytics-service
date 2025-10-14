@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class WeeklyTimePractice:
+class WeeklyTimePosture:
     id_student: str
     id_scale: int
     date: str

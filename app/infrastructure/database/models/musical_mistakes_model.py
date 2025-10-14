@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 from app.infrastructure.database.models.base import Base
 
-class PosturalMistakesModel(Base):
+class MusicalMistakesModel(Base):
     __tablename__ = "ProgresoErroresPosturales"
 
     id_student = Column(String(128), nullable=False, primary_key=True)
