@@ -6,10 +6,15 @@ from app.infrastructure.database.models.base import Base
 class PosturalMistakesModel(Base):
     __tablename__ = "ProgresoErroresPosturales"
 
-    id_student = Column("id_student", String(128), nullable=False, primary_key=True)
-    id_scale = Column("id_scale", Integer, nullable=False, primary_key=True)
-    date = Column("fecha", Date, nullable=False, primary_key=True)
-    year = Column("anio", Integer, nullable=False)
-    week = Column("semana", Integer, nullable=False)
-    month = Column("mes", Integer, nullable=False)
-    mistake_amount = Column("cantidad_errores", Integer, nullable=False)
+    # Primary keys
+    id_student = Column(String(128), primary_key=True, nullable=False)
+    id_scale = Column(Integer, primary_key=True, nullable=False)
+    fecha = Column(Date, primary_key=True, nullable=False)
+
+    # Time variables
+    anio = Column(Integer, nullable=False)
+    semana = Column(Integer, nullable=False)
+    mes = Column(Integer, nullable=False)
+
+    # Actual statistics
+    cantidad_errores = Column(Integer, default=0)

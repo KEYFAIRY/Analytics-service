@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship
 
 from app.infrastructure.database.models.base import Base
 
-class MusicalMistakesModel(Base):
-    __tablename__ = "ProgresoErroresMusicales"
+class DailyNotesModel(Base):
+    __tablename__ = "NotasResumenDiarias"
 
     # Primary keys
     id_student = Column(String(128), primary_key=True, nullable=False)
@@ -17,4 +17,5 @@ class MusicalMistakesModel(Base):
     mes = Column(Integer, nullable=False)
 
     # Actual statistics
-    cantidad_errores = Column(Integer, default=0)
+    notas_correctas = Column(Integer, default=0)
+    notas_incorrectas = Column(Integer, default=0)

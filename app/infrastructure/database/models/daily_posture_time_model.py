@@ -1,10 +1,10 @@
-from sqlalchemy import Column, Integer, String, Numeric, Date, ForeignKey
+from sqlalchemy import Column, Integer, Numeric, String, Float, Date, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.infrastructure.database.models.base import Base
 
-class MusicalMistakesModel(Base):
-    __tablename__ = "ProgresoErroresMusicales"
+class DailyPosturesModel(Base):
+    __tablename__ = "TiempoPosturasDiarias"
 
     # Primary keys
     id_student = Column(String(128), primary_key=True, nullable=False)
@@ -17,4 +17,6 @@ class MusicalMistakesModel(Base):
     mes = Column(Integer, nullable=False)
 
     # Actual statistics
-    cantidad_errores = Column(Integer, default=0)
+    tiempo_total = Column(Numeric, default=0)
+    tiempo_mala_postura = Column(Numeric, default=0)
+    tiempo_buena_postura = Column(Numeric, default=0)

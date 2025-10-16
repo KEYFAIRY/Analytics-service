@@ -16,8 +16,8 @@ from app.presentation.schemas.common_schema import StandardResponse
 from app.presentation.schemas.musical_mistakes_schema import MusicalMistakeItem, MusicalMistakesResponse
 from app.presentation.schemas.postural_mistakes_schema import PosturalMistakeItem, PosturalMistakesResponse
 from app.presentation.schemas.top_scale_schema import TopScaleItem, TopScaleResponse
-from app.presentation.schemas.weekly_notes_schema import WeeklyNotesItem, WeeklyNotesResponse
-from app.presentation.schemas.weekly_time_posture_schema import WeeklyTimePostureItem, WeeklyTimePostureResponse
+from app.presentation.schemas.daily_notes_schema import WeeklyNotesItem, WeeklyNotesResponse
+from app.presentation.schemas.daily_time_posture_schema import WeeklyTimePostureItem, WeeklyTimePostureResponse
 
 logger = logging.getLogger(__name__)
 

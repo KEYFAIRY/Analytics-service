@@ -7,7 +7,7 @@ from app.core.exceptions import DatabaseConnectionException, WeeklyTimePostureNo
 from app.domain.entities.weekly_time_posture import WeeklyTimePosture
 from app.domain.repositories.weekly_timep_repo import IWeeklyTimePostureRepository
 from app.infrastructure.database.mysql_connection import DatabaseConnection
-from app.infrastructure.database.models.weekly_timep_model import WeeklyTimePosturesModel
+from app.infrastructure.database.models.daily_posture_time_model import WeeklyTimePosturesModel
 from app.infrastructure.database.models.scale_model import Scale
 
 logger = logging.getLogger(__name__)

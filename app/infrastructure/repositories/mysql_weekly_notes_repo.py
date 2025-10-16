@@ -7,7 +7,7 @@ from app.core.exceptions import DatabaseConnectionException, WeeklyNotesNotFound
 from app.domain.entities.weekly_notes import WeeklyNotes
 from app.domain.repositories.weekly_notes_repo import IWeeklyNotesRepository
 from app.infrastructure.database.mysql_connection import DatabaseConnection
-from app.infrastructure.database.models.weekly_notes_model import WeeklyNotesModel
+from app.infrastructure.database.models.daily_notes_model import WeeklyNotesModel
 from app.infrastructure.database.models.scale_model import Scale
 
 logger = logging.getLogger(__name__)
