@@ -6,7 +6,7 @@ from app.infrastructure.database.models.base import Base
 class Scale(Base):
     __tablename__ = "Scale"
 
-    id_scale = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     scale_type = Column(String(50), nullable=False)
 

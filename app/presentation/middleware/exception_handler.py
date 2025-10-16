@@ -17,59 +17,50 @@ from app.presentation.schemas.common_schema import StandardResponse
 
 logger = logging.getLogger(__name__)
 
-def build_response(exc: MusicalMistakesNotFoundException) -> dict:
+def build_response(exc: AnalyticsServiceException) -> dict:
     logger.error(str(exc))
 
     return StandardResponse(
         code=str(exc.code),
         message=exc.message,
-        data=exc.details or None
+        data=getattr(exc, 'details', None)
     ).dict()
 
-async def musical_mistakes_not_found_exception_handler(request: Request, exc: MusicalMistakesNotFoundException):
-    logger.error(str(exc))
-    return JSONResponse(status_code=exc.code, content=build_response(exc))
-
-async def postural_mistakes_not_found_exception_handler(request: Request, exc: PosturalMistakesNotFoundException):
-    logger.error(str(exc))
-    return JSONResponse(status_code=exc.code, content=build_response(exc))
-
-async def top_scales_not_found_exception_handler(request: Request, exc: TopScalesNotFoundException):
-    logger.error(str(exc))
-    return JSONResponse(status_code=exc.code, content=build_response(exc))
-
-async def weekly_notes_not_found_exception_handler(request: Request, exc: WeeklyNotesNotFoundException):
-    logger.error(str(exc))
-    return JSONResponse(status_code=exc.code, content=build_response(exc))
-
-async def weekly_time_posture_not_found_exception_handler(request: Request, exc: WeeklyTimePostureNotFoundException):
-    logger.error(str(exc))
-    return JSONResponse(status_code=exc.code, content=build_response(exc))
 
 async def analytics_service_exception_handler(request: Request, exc: AnalyticsServiceException):
-    """Handler for generic analytics service exceptions"""
-    logger.error("%s: %s - Code: %s", exc.__class__.__name__, exc.message, exc.code)
-    response = StandardResponse.error(message=exc.message, code=exc.code)
-    return JSONResponse(status_code=int(exc.code), content=response.dict())
+    logger.error(str(exc))
+    return JSONResponse(status_code=int(exc.code), content=build_response(exc))
 
+async def musical_mistakes_not_found_exception_handler(request: Request, exc: MusicalMistakesNotFoundException):
+    logger.warning(str(exc))
+    return JSONResponse(status_code=int(exc.code), content=build_response(exc))
+
+async def postural_mistakes_not_found_exception_handler(request: Request, exc: PosturalMistakesNotFoundException):
+    logger.warning(str(exc))
+    return JSONResponse(status_code=int(exc.code), content=build_response(exc))
+
+async def top_scales_not_found_exception_handler(request: Request, exc: TopScalesNotFoundException):
+    logger.warning(str(exc))
+    return JSONResponse(status_code=int(exc.code), content=build_response(exc))
+
+async def weekly_notes_not_found_exception_handler(request: Request, exc: WeeklyNotesNotFoundException):
+    logger.warning(str(exc))
+    return JSONResponse(status_code=int(exc.code), content=build_response(exc))
+
+async def weekly_time_posture_not_found_exception_handler(request: Request, exc: WeeklyTimePostureNotFoundException):
+    logger.warning(str(exc))
+    return JSONResponse(status_code=int(exc.code), content=build_response(exc))
 
 async def database_connection_exception_handler(request: Request, exc: DatabaseConnectionException):
-    """Handler for database connection errors"""
-    logger.error("DatabaseConnectionException: %s", exc.message)
-    response = StandardResponse.internal_error(exc.message)
-    return JSONResponse(status_code=500, content=response.dict())
-
+    logger.error(str(exc))
+    return JSONResponse(status_code=int(exc.code), content=build_response(exc))
 
 async def validation_exception_handler(request: Request, exc: ValidationException):
-    """Handler for validation errors"""
-    logger.warning("ValidationException: %s", exc.message)
-    response = StandardResponse.validation_error(exc.message)
-    return JSONResponse(status_code=400, content=response.dict())
-
+    logger.warning(str(exc))
+    return JSONResponse(status_code=int(exc.code), content=build_response(exc))
 
 async def request_validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handler for FastAPI/Pydantic validation errors"""
-    logger.warning("Request validation error: %s", exc.errors())
+    logger.warning(f"Request validation error: {exc.errors()}")
     error_messages = []
     for error in exc.errors():
         field = " -> ".join(str(loc) for loc in error["loc"])
@@ -79,9 +70,7 @@ async def request_validation_exception_handler(request: Request, exc: RequestVal
     response = StandardResponse.validation_error(formatted_message)
     return JSONResponse(status_code=422, content=response.dict())
 
-
 async def general_exception_handler(request: Request, exc: Exception):
-    """Handler for uncaught exceptions"""
-    logger.error("Unhandled exception: %s: %s", type(exc).__name__, str(exc), exc_info=True)
+    logger.error(f"Unhandled exception: {type(exc).__name__}: {str(exc)}", exc_info=True)
     response = StandardResponse.internal_error("An unexpected error occurred")
     return JSONResponse(status_code=500, content=response.dict())

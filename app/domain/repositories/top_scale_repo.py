@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from app.domain.entities.top_scale import TopScale
+from app.domain.entities.top_scale import TopScale 
 
 class ITopScaleRepository(ABC):
 

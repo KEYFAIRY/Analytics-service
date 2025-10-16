@@ -27,7 +27,7 @@ class MySQLWeeklyNotesRepository(IWeeklyNotesRepository):
                            WeeklyNotesModel.mes,
                            WeeklyNotesModel.notas_correctas,
                            WeeklyNotesModel.notas_incorrectas)
-                    .join(Scale, Scale.id_scale == WeeklyNotesModel.id_scale)
+                    .join(Scale, Scale.id == WeeklyNotesModel.id_scale)
                     .where(
                         WeeklyNotesModel.id_student == id_student,
                         WeeklyNotesModel.anio == year,

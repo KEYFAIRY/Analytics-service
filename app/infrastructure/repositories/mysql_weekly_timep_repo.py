@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class MySQLWeeklyPostureRepository(IWeeklyTimePostureRepository):
 
-    async def get_weekly_posture(self, id_student: str, year: int, week: int) -> List[WeeklyTimePosture]:
+    async def get_weekly_time_posture(self, id_student: str, year: int, week: int) -> List[WeeklyTimePosture]:
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
@@ -28,7 +28,7 @@ class MySQLWeeklyPostureRepository(IWeeklyTimePostureRepository):
                            WeeklyPosturesModel.tiempo_total,
                            WeeklyPosturesModel.tiempo_mala_postura,
                            WeeklyPosturesModel.tiempo_buena_postura)
-                    .join(Scale, Scale.id_scale == WeeklyPosturesModel.id_scale)
+                    .join(Scale, Scale.id == WeeklyPosturesModel.id_scale)
                     .where(
                         WeeklyPosturesModel.id_student == id_student,
                         WeeklyPosturesModel.anio == year,

@@ -26,7 +26,7 @@ class MySQLMusicalMistakesRepository(IMusicalMistakesRepository):
                            MusicalMistakesModel.semana,
                            MusicalMistakesModel.mes,
                            MusicalMistakesModel.cantidad_errores)
-                    .join(Scale, Scale.id_scale == MusicalMistakesModel.id_scale)
+                    .join(Scale, Scale.id == MusicalMistakesModel.id_scale)
                     .where(
                         MusicalMistakesModel.id_student == id_student,
                         MusicalMistakesModel.anio == year,

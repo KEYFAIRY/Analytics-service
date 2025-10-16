@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class MySQLTopScaleRepository(ITopScaleRepository):
 
-    async def get_top_scale(self, id_student: str, year: int, week: int) -> List[TopScale]:
+    async def get_top_scales(self, id_student: str, year: int, week: int) -> List[TopScale]:
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
@@ -26,7 +26,7 @@ class MySQLTopScaleRepository(ITopScaleRepository):
                            TopScaleModel.semana,
                            TopScaleModel.mes,
                            TopScaleModel.veces_practicada)
-                    .join(Scale, Scale.id_scale == TopScaleModel.id_scale)
+                    .join(Scale, Scale.id == TopScaleModel.id_scale)
                     .where(
                         TopScaleModel.id_student == id_student,
                         TopScaleModel.anio == year,

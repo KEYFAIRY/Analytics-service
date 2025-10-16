@@ -26,7 +26,7 @@ class MySQLPosturalMistakesRepository(IPosturalMistakesRepository):
                            PosturalMistakesModel.semana,
                            PosturalMistakesModel.mes,
                            PosturalMistakesModel.cantidad_errores)
-                    .join(Scale, Scale.id_scale == PosturalMistakesModel.id_scale)
+                    .join(Scale, Scale.id == PosturalMistakesModel.id_scale)
                     .where(
                         PosturalMistakesModel.id_student == id_student,
                         PosturalMistakesModel.anio == year,

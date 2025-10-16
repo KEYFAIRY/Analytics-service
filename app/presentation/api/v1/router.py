@@ -50,7 +50,7 @@ async def get_top_scales(
         ) for scale in top_scales_dto
     ]
 
-    response = TopScaleResponse(items=items)
+    response = TopScaleResponse(data=items)
 
     return StandardResponse.success(data=response, message="Top scales retrieved successfully")
 
@@ -83,7 +83,7 @@ async def get_weekly_time_posture(
         ) for posture in weekly_posture
     ]
 
-    response = WeeklyTimePostureResponse(items=items)
+    response = WeeklyTimePostureResponse(data=items)
 
     return StandardResponse.success(data=response, message="Weekly time spent on postures retrieved successfully")
 
@@ -115,7 +115,7 @@ async def get_weekly_notes(
         ) for note in notes_dto
     ]
 
-    response = WeeklyNotesResponse(items=items)
+    response = WeeklyNotesResponse(data=items)
 
     return StandardResponse.success(data=response, message="Weekly notes summary retrieved successfully")
 
@@ -147,7 +147,7 @@ async def get_postural_mistakes(
         ) for mistake in mistakes_dto
     ]
 
-    response = PosturalMistakesResponse(items=items)
+    response = PosturalMistakesResponse(data=items)
 
     return StandardResponse.success(data=response, message="Postural mistakes retrieved successfully")
 
@@ -167,7 +167,7 @@ async def get_musical_mistakes(
 
     logger.info(f"Getting musical mistakes for student {idStudent} in year {anio}, week {semana}")
 
-    mistakes_dto : List = await use_case.execute(idStudent, anio, semana)
+    mistakes_dto = await use_case.execute(idStudent, anio, semana)
 
     items = [
         MusicalMistakeItem(
@@ -177,6 +177,6 @@ async def get_musical_mistakes(
         ) for mistake in mistakes_dto
     ]
 
-    response = MusicalMistakesResponse(items=items)
+    response = MusicalMistakesResponse(data=items)
 
     return StandardResponse.success(data=response, message="Musical mistakes retrieved successfully")

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from fastapi import FastAPI
 from fastapi.exception_handlers import request_validation_exception_handler
@@ -7,15 +8,27 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.logging import configure_logging
 from app.core.exceptions import (
+    AnalyticsServiceException,
     DatabaseConnectionException,
+    MusicalMistakesNotFoundException,
+    PosturalMistakesNotFoundException,
+    TopScalesNotFoundException,
     ValidationException,
+    WeeklyNotesNotFoundException,
+    WeeklyTimePostureNotFoundException,
 )
 from app.infrastructure.database import mysql_connection
 from app.presentation.api.v1.router import router as my_router
 from app.presentation.middleware.exception_handler import (
+    analytics_service_exception_handler,
     database_connection_exception_handler, 
-    general_exception_handler, 
-    validation_exception_handler
+    general_exception_handler,
+    musical_mistakes_not_found_exception_handler,
+    postural_mistakes_not_found_exception_handler,
+    top_scales_not_found_exception_handler, 
+    validation_exception_handler,
+    weekly_notes_not_found_exception_handler,
+    weekly_time_posture_not_found_exception_handler
 )
 
 
@@ -24,20 +37,35 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
+async def initialize_databases(retry_delay: int = 5):
+    mysql_connected = False
+    attempt = 0
+    
+    while not (mysql_connected):
+        logger.info(f"Reintentando conexión a BDs (intento {attempt + 1})...")
+        await asyncio.sleep(retry_delay)
+        
+        attempt += 1
+        
+        # MySQL
+        if not mysql_connected:
+            try:
+                mysql_connection.mysql_connection.init_engine()
+                await mysql_connection.mysql_connection.verify_connection()
+                mysql_connected = True
+            except Exception as e:
+                logger.warning(f"⚠️  MySQL connection failed: {e}")
+    logger.info("✅ Todas las conexiones de BD establecidas y verificadas")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # ---------- Startup ----------
     logger.info(f"Starting {settings.APP_NAME} v{settings.APP_VERSION}")
     logger.info(f"Environment: {settings.APP_ENV}")
 
-    # DB Connections
-    try:
-        # MySQL
-        mysql_connection.mysql_connection.init_engine()
-        logger.info("MySQL connection established")
-    except Exception:
-        logger.exception("Error initializing database connections")
-        raise
+    # ---------- DB Connections ----------
+    await initialize_databases(retry_delay=5)
 
     yield
 
@@ -63,8 +91,14 @@ def create_application() -> FastAPI:
     )
 
     # Exception Handlers
+    app.add_exception_handler(AnalyticsServiceException, analytics_service_exception_handler)
     app.add_exception_handler(DatabaseConnectionException, database_connection_exception_handler)
     app.add_exception_handler(ValidationException, validation_exception_handler)
+    app.add_exception_handler(MusicalMistakesNotFoundException, musical_mistakes_not_found_exception_handler)
+    app.add_exception_handler(PosturalMistakesNotFoundException, postural_mistakes_not_found_exception_handler)
+    app.add_exception_handler(TopScalesNotFoundException, top_scales_not_found_exception_handler)
+    app.add_exception_handler(WeeklyNotesNotFoundException, weekly_notes_not_found_exception_handler)
+    app.add_exception_handler(WeeklyTimePostureNotFoundException, weekly_time_posture_not_found_exception_handler)
     app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
     app.add_exception_handler(Exception, general_exception_handler)
 
