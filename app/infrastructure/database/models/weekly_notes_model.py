@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 
 from app.infrastructure.database.models.base import Base
 
-class DailyNotesModel(Base):
+class WeeklyNotesModel(Base):
     __tablename__ = "NotasResumenDiarias"
 
     # Primary keys

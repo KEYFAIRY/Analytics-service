@@ -12,6 +12,7 @@ class GetWeeklyTimePostureUseCase:
         return [WeeklyTimePostureDTO(
             id_student = posture.id_student,
             id_scale = posture.id_scale,
+            scale = posture.scale,
             date = posture.date,
             year = posture.year,
             week = posture.week,

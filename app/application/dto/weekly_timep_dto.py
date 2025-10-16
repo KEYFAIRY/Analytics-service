@@ -4,6 +4,7 @@ from dataclasses import dataclass
 class WeeklyTimePostureDTO:
     id_student: str
     id_scale: int
+    scale: str
     date: str
     year: int
     week: int

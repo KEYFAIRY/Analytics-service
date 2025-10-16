@@ -1,6 +1,5 @@
 import logging
-from typing import List
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from app.core.exceptions import DatabaseConnectionException, TopScalesNotFoundException
@@ -18,24 +17,30 @@ class MySQLTopScaleRepository(ITopScaleRepository):
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
-                    select(Scale.name,
-                           func.sum(TopScaleModel.times_practiced))
+                    select(TopScaleModel.id_student,
+                           TopScaleModel.id_scale,
+                           Scale.name.label('scale_name'),
+                           TopScaleModel.fecha,
+                           TopScaleModel.anio,
+                           TopScaleModel.semana,
+                           TopScaleModel.mes,
+                           TopScaleModel.veces_practicada)
                     .join(Scale, Scale.id_scale == TopScaleModel.id_scale)
                     .where(
                         TopScaleModel.id_student == id_student,
-                        TopScaleModel.year == year,
-                        TopScaleModel.week == week)
-                    .group_by(Scale.name)
-                    .order_by(func.sum(TopScaleModel.times_practiced).desc())
+                        TopScaleModel.anio == year,
+                        TopScaleModel.semana == week)
+                    .order_by(TopScaleModel.veces_practicada.desc())
+                    .limit(3)  # Top 3
                 )
-                rows = query.scalars().all()
+                rows = query.fetchall()
 
                 if not rows:
                     logger.warning(f"No top scales found for student {id_student}, year {year}, week {week}")
                     raise TopScalesNotFoundException()
                 
                 logger.debug(f"Top scales found: {rows}")
-                return [self._model_to_entity(row) for row in rows]
+                return [self._row_to_entity(row) for row in rows]
         except IntegrityError as e:
             logger.error(f"MySQL integrity error while fetching top scales with id_student {id_student}, year {year}, week {week}. Mistakes: {e}", exc_info=True)
             raise DatabaseConnectionException("Integrity error occurred while accessing the database.")
@@ -43,13 +48,14 @@ class MySQLTopScaleRepository(ITopScaleRepository):
             logger.error(f"MySQL error while fetching top scales with id_student {id_student}, year {year}, week {week}. Mistakes: {e}", exc_info=True)
             raise DatabaseConnectionException("Database error occurred while accessing the database.")
         
-    def _model_to_entity(self, model: TopScaleModel) -> TopScale:
+    def _row_to_entity(self, row) -> TopScale:
         return TopScale(
-            id_student = model.id_student,
-            id_scale = model.id_scale,
-            date = model.date,
-            year = model.year,
-            week = model.week,
-            month = model.month,
-            times_practiced = model.times_practiced
+            id_student=row.id_student,
+            id_scale=row.id_scale,
+            scale=row.scale_name,
+            date=row.fecha.strftime('%Y-%m-%d') if row.fecha else '',
+            year=row.anio,
+            week=row.semana,
+            month=row.mes,
+            times_practiced=row.veces_practicada
         )

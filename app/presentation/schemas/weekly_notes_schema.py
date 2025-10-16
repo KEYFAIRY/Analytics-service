@@ -1,8 +1,8 @@
 from typing import List
 from pydantic import BaseModel, Field
 
-class DailyNotesItem(BaseModel):
-    """Schema for each item in the list of daily notes"""
+class WeeklyNotesItem(BaseModel):
+    """Schema for each item in the list of weekly notes"""
 
     escala: str = Field(..., description="Name of the musical scale", example="C Major")
     notas_correctas: int = Field(..., description="Amount of right notes played for the scale", example=10)
@@ -10,7 +10,7 @@ class DailyNotesItem(BaseModel):
 
 class WeeklyNotesResponse(BaseModel):
     """Schema for weekly notes response (list)"""
-    data: List[DailyNotesItem] = Field(..., description = "List of weekly notes", example = [])
+    data: List[WeeklyNotesItem] = Field(..., description = "List of weekly notes", example = [])
 
     class Config:
         schema_extra = {

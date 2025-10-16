@@ -12,6 +12,7 @@ class GetWeeklyNotesUseCase:
         return [WeeklyNotesDTO(
             id_student = note.id_student,
             id_scale = note.id_scale,
+            scale = note.scale,
             date = note.date,
             year = note.year,
             week = note.week,
