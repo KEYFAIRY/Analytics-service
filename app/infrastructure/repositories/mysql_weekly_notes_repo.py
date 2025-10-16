@@ -16,12 +16,12 @@ class MySQLWeeklyNotesRepository(IWeeklyNotesRepository):
 
     async def get_weekly_notes(self, id_student, year, week):
         try:
-            async with DatabaseConnection.get_async_session() as session:
+            async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
                     select(Scale.name,
                            func.sum(WeeklyNotesModel.right_notes),
                            func.sum(WeeklyNotesModel.wrong_notes))
-                    .join(Scale, Scale.id == WeeklyNotesModel.id_scale)
+                    .join(Scale, Scale.id_scale == WeeklyNotesModel.id_scale)
                     .where(
                         WeeklyNotesModel.id_student == id_student,
                         WeeklyNotesModel.year == year,

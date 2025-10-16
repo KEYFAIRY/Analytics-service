@@ -5,13 +5,46 @@ from fastapi.exceptions import RequestValidationError
 from app.core.exceptions import (
     AnalyticsServiceException,
     DatabaseConnectionException,
-    ValidationException
+    ValidationException,
+    MusicalMistakesNotFoundException,
+    PosturalMistakesNotFoundException,
+    TopScalesNotFoundException,
+    WeeklyNotesNotFoundException,
+    WeeklyTimePostureNotFoundException
 )
 from app.presentation.schemas.common_schema import StandardResponse
 
 
 logger = logging.getLogger(__name__)
 
+def build_response(exc: MusicalMistakesNotFoundException) -> dict:
+    logger.error(str(exc))
+
+    return StandardResponse(
+        code=str(exc.code),
+        message=exc.message,
+        data=exc.details or None
+    ).dict()
+
+async def musical_mistakes_not_found_exception_handler(request: Request, exc: MusicalMistakesNotFoundException):
+    logger.error(str(exc))
+    return JSONResponse(status_code=exc.code, content=build_response(exc))
+
+async def postural_mistakes_not_found_exception_handler(request: Request, exc: PosturalMistakesNotFoundException):
+    logger.error(str(exc))
+    return JSONResponse(status_code=exc.code, content=build_response(exc))
+
+async def top_scales_not_found_exception_handler(request: Request, exc: TopScalesNotFoundException):
+    logger.error(str(exc))
+    return JSONResponse(status_code=exc.code, content=build_response(exc))
+
+async def weekly_notes_not_found_exception_handler(request: Request, exc: WeeklyNotesNotFoundException):
+    logger.error(str(exc))
+    return JSONResponse(status_code=exc.code, content=build_response(exc))
+
+async def weekly_time_posture_not_found_exception_handler(request: Request, exc: WeeklyTimePostureNotFoundException):
+    logger.error(str(exc))
+    return JSONResponse(status_code=exc.code, content=build_response(exc))
 
 async def analytics_service_exception_handler(request: Request, exc: AnalyticsServiceException):
     """Handler for generic analytics service exceptions"""

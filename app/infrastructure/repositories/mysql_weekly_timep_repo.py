@@ -16,13 +16,13 @@ class MySQLWeeklyTimePostureRepository(IWeeklyTimePostureRepository):
 
     async def get_weekly_time_posture(self, id_student, year, week):
         try:
-            async with DatabaseConnection.get_async_session() as session:
+            async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
                     select(Scale.name,
                            func.sum(WeeklyTimePosturesModel.total_time),
                            func.sum(WeeklyTimePosturesModel.bad_posture_time),
                            func.sum(WeeklyTimePosturesModel.good_posture_time))
-                    .join(Scale, Scale.id == WeeklyTimePosturesModel.id_scale)
+                    .join(Scale, Scale.id_scale == WeeklyTimePosturesModel.id_scale)
                     .where(
                         WeeklyTimePosturesModel.id_student == id_student,
                         WeeklyTimePosturesModel.year == year,

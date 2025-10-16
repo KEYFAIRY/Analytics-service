@@ -16,11 +16,11 @@ class MySQLPosturalMistakesRepository(IPosturalMistakesRepository):
 
     async def get_postural_mistakes(self, id_student, year, week):
         try:
-            async with DatabaseConnection.get_async_session() as session:
+            async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
                     select(Scale.name,
                            func.sum(PosturalMistakesModel.mistake_amount))
-                    .join(Scale, Scale.id == PosturalMistakesModel.id_scale)
+                    .join(Scale, Scale.id_scale == PosturalMistakesModel.id_scale)
                     .where(
                         PosturalMistakesModel.id_student == id_student,
                         PosturalMistakesModel.year == year,

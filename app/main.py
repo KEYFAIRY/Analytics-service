@@ -11,7 +11,7 @@ from app.core.exceptions import (
     ValidationException,
 )
 from app.infrastructure.database import mysql_connection
-
+from app.presentation.api.v1.router import router as my_router
 from app.presentation.middleware.exception_handler import (
     database_connection_exception_handler, 
     general_exception_handler, 
@@ -79,7 +79,7 @@ def create_application() -> FastAPI:
         }
 
     # Routers
-    # Example: app.include_router(router), router is defined in presentation/api/v1
+    app.include_router(my_router)  # router is defined in presentation/api/v1
 
     return app
 

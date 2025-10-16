@@ -16,11 +16,11 @@ class MySQLMusicalMistakesRepository(IMusicalMistakesRepository):
 
     async def get_musical_mistakes(self, id_student, year, week) -> List[MusicalMistakes]:
         try:
-            async with DatabaseConnection.get_async_session() as session:
+            async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
                     select(Scale.name,
                             func.sum(MusicalMistakesModel.mistake_amount))
-                    .join(Scale, Scale.id == MusicalMistakesModel.id_scale)
+                    .join(Scale, Scale.id_scale== MusicalMistakesModel.id_scale)
                     .where(
                             MusicalMistakesModel.id_student == id_student,
                             MusicalMistakesModel.year == year,
