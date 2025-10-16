@@ -1,4 +1,5 @@
 import logging
+from typing import List
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class MySQLTopScaleRepository(ITopScaleRepository):
 
-    async def get_top_scale(self, id_student: str, year: int, week: int):
+    async def get_top_scale(self, id_student: str, year: int, week: int) -> List[TopScale]:
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(

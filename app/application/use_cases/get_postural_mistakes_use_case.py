@@ -12,6 +12,7 @@ class GetPosturalMistakesUseCase:
         return [PosturalMistakesDTO(
             id_student = mistake.id_student,
             id_scale = mistake.id_scale,
+            scale = mistake.scale,
             date = mistake.date,
             year = mistake.year,
             week = mistake.week,

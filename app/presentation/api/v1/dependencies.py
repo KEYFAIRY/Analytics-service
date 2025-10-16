@@ -29,9 +29,9 @@ def get_mysql_weekly_timep_repository() -> MySQLWeeklyPostureRepository:
     return MySQLWeeklyPostureRepository()
 
 @lru_cache
-def get_mysql_musical_mistakes_repository() -> MySQLMusicalMistakesRepository:
-    # Get an instance of MySQLMusicalMistakesRepository
-    return MySQLMusicalMistakesRepository()
+def get_mysql_weekly_notes_repository() -> MySQLWeeklyNotesRepository:
+    # Get an instance of MySQLWeeklyNotesRepository
+    return MySQLWeeklyNotesRepository()
 
 @lru_cache
 def get_mysql_postural_mistakes_repository() -> MySQLPosturalMistakesRepository:
@@ -39,9 +39,9 @@ def get_mysql_postural_mistakes_repository() -> MySQLPosturalMistakesRepository:
     return MySQLPosturalMistakesRepository()
 
 @lru_cache
-def get_mysql_weekly_notes_repository() -> MySQLWeeklyNotesRepository:
-    # Get an instance of MySQLWeeklyNotesRepository
-    return MySQLWeeklyNotesRepository()
+def get_mysql_musical_mistakes_repository() -> MySQLMusicalMistakesRepository:
+    # Get an instance of MySQLMusicalMistakesRepository
+    return MySQLMusicalMistakesRepository()
 
 
 
@@ -58,9 +58,9 @@ def get_weekly_timep_service() -> WeeklyTimePostureService:
     return WeeklyTimePostureService(weekly_timep_repo=get_mysql_weekly_timep_repository())
 
 @lru_cache
-def get_musical_mistakes_service() -> MusicalMistakesService:
-    # Get an instance of MusicalMistakesService
-    return MusicalMistakesService(musical_mistakes_repo=get_mysql_musical_mistakes_repository())
+def get_weekly_notes_service() -> WeeklyNotesService:
+    # Get an instance of WeeklyNotesService
+    return WeeklyNotesService(weekly_notes_repo=get_mysql_weekly_notes_repository())
 
 @lru_cache
 def get_postural_mistakes_service() -> PosturalMistakesService:
@@ -68,9 +68,9 @@ def get_postural_mistakes_service() -> PosturalMistakesService:
     return PosturalMistakesService(postural_mistakes_repo=get_mysql_postural_mistakes_repository())
 
 @lru_cache
-def get_weekly_notes_service() -> WeeklyNotesService:
-    # Get an instance of WeeklyNotesService
-    return WeeklyNotesService(weekly_notes_repo=get_mysql_weekly_notes_repository())
+def get_musical_mistakes_service() -> MusicalMistakesService:
+    # Get an instance of MusicalMistakesService
+    return MusicalMistakesService(musical_mistakes_repo=get_mysql_musical_mistakes_repository())
 
 
 
@@ -87,9 +87,9 @@ def get_weekly_timep_use_case() -> GetWeeklyTimePostureUseCase:
     return GetWeeklyTimePostureUseCase(weekly_timep_service=get_weekly_timep_service())
 
 @lru_cache
-def get_musical_mistakes_use_case() -> GetMusicalMistakesUseCase:
-    # Get an instance of GetMusicalMistakesUseCase
-    return GetMusicalMistakesUseCase(musical_mistakes_service=get_musical_mistakes_service())
+def get_weekly_notes_use_case() -> GetWeeklyNotesUseCase:
+    # Get an instance of GetWeeklyNotesUseCase
+    return GetWeeklyNotesUseCase(weekly_notes_service=get_weekly_notes_service())
 
 @lru_cache
 def get_postural_mistakes_use_case() -> GetPosturalMistakesUseCase:
@@ -97,9 +97,9 @@ def get_postural_mistakes_use_case() -> GetPosturalMistakesUseCase:
     return GetPosturalMistakesUseCase(postural_mistakes_service=get_postural_mistakes_service())
 
 @lru_cache
-def get_weekly_notes_use_case() -> GetWeeklyNotesUseCase:
-    # Get an instance of GetWeeklyNotesUseCase
-    return GetWeeklyNotesUseCase(weekly_notes_service=get_weekly_notes_service())
+def get_musical_mistakes_use_case() -> GetMusicalMistakesUseCase:
+    # Get an instance of GetMusicalMistakesUseCase
+    return GetMusicalMistakesUseCase(musical_mistakes_service=get_musical_mistakes_service())
 
 
 
@@ -113,14 +113,14 @@ def get_weekly_timep_use_case_dependency() -> GetWeeklyTimePostureUseCase:
     # Dependency for injecting GetWeeklyTimePostureUseCase
     return get_weekly_timep_use_case()
 
-def get_musical_mistakes_use_case_dependency() -> GetMusicalMistakesUseCase:
-    # Dependency for injecting GetMusicalMistakesUseCase
-    return get_musical_mistakes_use_case()
+def get_weekly_notes_use_case_dependency() -> GetWeeklyNotesUseCase:
+    # Dependency for injecting GetWeeklyNotesUseCase
+    return get_weekly_notes_use_case()
 
 def get_postural_mistakes_use_case_dependency() -> GetPosturalMistakesUseCase:
     # Dependency for injecting GetPosturalMistakesUseCase
     return get_postural_mistakes_use_case() 
 
-def get_weekly_notes_use_case_dependency() -> GetWeeklyNotesUseCase:
-    # Dependency for injecting GetWeeklyNotesUseCase
-    return get_weekly_notes_use_case()
+def get_musical_mistakes_use_case_dependency() -> GetMusicalMistakesUseCase:
+    # Dependency for injecting GetMusicalMistakesUseCase
+    return get_musical_mistakes_use_case()

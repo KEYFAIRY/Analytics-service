@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from app.core.exceptions import DatabaseConnectionException, WeeklyNotesNotFoundException
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class MySQLWeeklyNotesRepository(IWeeklyNotesRepository):
 
-    async def get_weekly_notes(self, id_student, year, week):
+    async def get_weekly_notes(self, id_student, year, week) -> List[WeeklyNotes]:
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(

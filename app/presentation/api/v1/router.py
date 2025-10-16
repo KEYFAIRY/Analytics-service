@@ -120,54 +120,63 @@ async def get_weekly_notes(
     return StandardResponse.success(data=response, message="Weekly notes summary retrieved successfully")
 
 
-
-@router.get(
-    "/errores-musicales-semanales",
-    response_model = StandardResponse[MusicalMistakesResponse],
-    status_code = status.HTTP_200_OK,
-    summary = "Get weekly musical mistakes")
-async def get_musical_mistakes(id_student:str, year:int, week:int,
-                               use_case: GetMusicalMistakesUseCase = Depends(get_musical_mistakes_use_case_dependency)):
-    # Endpoint that sends the musical mistakes for a student in a given week
-
-    logger.info(f"Getting musical mistakes for student {id_student} in year {year}, week {week}")
-    
-    mistakes_dto : List = await use_case.execute(id_student, year, week)
-
-    items = [
-        MusicalMistakeItem(
-            name=mistake.name,
-            mistake_amount=mistake.mistake_amount
-        ) for mistake in mistakes_dto
-    ]
-
-    response = MusicalMistakesResponse(items=items)
-
-    return StandardResponse.success(data=response, message="Musical mistakes retrieved successfully")
-
-
 @router.get(
     "/errores-posturales-semanales",
     response_model = StandardResponse[PosturalMistakesResponse],
     status_code = status.HTTP_200_OK,
     summary = "Get weekly postural mistakes"
 )
-async def get_postural_mistakes(id_student: str, year: int, week: int,
-                                use_case: GetPosturalMistakesUseCase = Depends(get_postural_mistakes_use_case_dependency)):
+async def get_postural_mistakes(
+    idStudent: str = Query(..., alias="idStudent"),
+    anio: int = Query(..., alias="anio"),
+    semana: int = Query(..., alias="semana"),
+    use_case: GetPosturalMistakesUseCase = Depends(get_postural_mistakes_use_case_dependency)
+    ):
     
     # Endpoint that sends the postural mistakes for a student in a given week
 
-    logger.info(f"Getting postural mistakes for student {id_student} in year {year}, week {week}")
+    logger.info(f"Getting postural mistakes for student {idStudent} in year {anio}, week {semana}")
 
-    mistakes_dto: List = await use_case.execute(id_student, year, week)
+    mistakes_dto = await use_case.execute(idStudent, anio, semana)
 
     items = [
         PosturalMistakeItem(
-            date=mistake.date,
-            mistake_amount=mistake.mistake_amount
+            escala=mistake.scale,
+            total_errores_posturales=mistake.mistake_amount,
+            dia=mistake.date
         ) for mistake in mistakes_dto
     ]
 
     response = PosturalMistakesResponse(items=items)
 
     return StandardResponse.success(data=response, message="Postural mistakes retrieved successfully")
+
+
+@router.get(
+    "/errores-musicales-semanales",
+    response_model = StandardResponse[MusicalMistakesResponse],
+    status_code = status.HTTP_200_OK,
+    summary = "Get weekly musical mistakes")
+async def get_musical_mistakes(
+    idStudent: str = Query(..., alias="idStudent"),
+    anio: int = Query(..., alias="anio"),
+    semana: int = Query(..., alias="semana"),
+    use_case: GetMusicalMistakesUseCase = Depends(get_musical_mistakes_use_case_dependency)
+    ):
+    # Endpoint that sends the musical mistakes for a student in a given week
+
+    logger.info(f"Getting musical mistakes for student {idStudent} in year {anio}, week {semana}")
+
+    mistakes_dto : List = await use_case.execute(idStudent, anio, semana)
+
+    items = [
+        MusicalMistakeItem(
+            escala=mistake.scale,
+            total_errores_musicales=mistake.mistake_amount,
+            dia=mistake.date
+        ) for mistake in mistakes_dto
+    ]
+
+    response = MusicalMistakesResponse(items=items)
+
+    return StandardResponse.success(data=response, message="Musical mistakes retrieved successfully")

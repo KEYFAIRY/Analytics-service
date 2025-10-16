@@ -4,6 +4,7 @@ from dataclasses import dataclass
 class PosturalMistakes:
     id_student: str
     id_scale: int
+    scale: str
     date: str
     year: int
     week: int

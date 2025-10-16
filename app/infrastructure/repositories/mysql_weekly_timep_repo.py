@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from app.core.exceptions import DatabaseConnectionException, WeeklyTimePostureNotFoundException
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class MySQLWeeklyPostureRepository(IWeeklyTimePostureRepository):
 
-    async def get_weekly_posture(self, id_student: str, year: int, week: int):
+    async def get_weekly_posture(self, id_student: str, year: int, week: int) -> List[WeeklyTimePosture]:
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
