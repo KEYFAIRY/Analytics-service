@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from app.core.exceptions import DatabaseConnectionException, WeeklyTimePostureNotFoundException
@@ -18,22 +18,17 @@ class MySQLWeeklyPostureRepository(IWeeklyTimePostureRepository):
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
-                    select(WeeklyPosturesModel.id_student,
-                           WeeklyPosturesModel.id_scale,
-                           Scale.name.label('scale_name'),
-                           WeeklyPosturesModel.fecha,
-                           WeeklyPosturesModel.anio,
-                           WeeklyPosturesModel.semana,
-                           WeeklyPosturesModel.mes,
-                           WeeklyPosturesModel.tiempo_total,
-                           WeeklyPosturesModel.tiempo_mala_postura,
-                           WeeklyPosturesModel.tiempo_buena_postura)
+                    select(Scale.name.label('scale_name'),
+                           func.sum(WeeklyPosturesModel.tiempo_total).label('tiempo_total'),
+                           func.sum(WeeklyPosturesModel.tiempo_mala_postura).label('tiempo_mala_postura'),
+                           func.sum(WeeklyPosturesModel.tiempo_buena_postura).label('tiempo_buena_postura'))
                     .join(Scale, Scale.id == WeeklyPosturesModel.id_scale)
                     .where(
                         WeeklyPosturesModel.id_student == id_student,
                         WeeklyPosturesModel.anio == year,
                         WeeklyPosturesModel.semana == week)
-                    .order_by(WeeklyPosturesModel.tiempo_total.desc())
+                    .group_by(Scale.name)
+                    .order_by(func.sum(WeeklyPosturesModel.tiempo_total).desc())
                 )
                 rows = query.fetchall()
 
@@ -52,13 +47,7 @@ class MySQLWeeklyPostureRepository(IWeeklyTimePostureRepository):
         
     def _row_to_entity(self, row) -> WeeklyTimePosture:
         return WeeklyTimePosture(
-            id_student=row.id_student,
-            id_scale=row.id_scale,
             scale=row.scale_name,
-            date=row.fecha.strftime('%Y-%m-%d') if row.fecha else '',
-            year=row.anio,
-            week=row.semana,
-            month=row.mes,
             time_practiced=float(row.tiempo_total) if row.tiempo_total else 0.0,
             bad_posture_time=float(row.tiempo_mala_postura) if row.tiempo_mala_postura else 0.0,
             good_posture_time=float(row.tiempo_buena_postura) if row.tiempo_buena_postura else 0.0

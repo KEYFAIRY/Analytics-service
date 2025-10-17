@@ -2,7 +2,7 @@ from typing import List
 from pydantic import BaseModel, Field
 
 class WeeklyTimePostureItem(BaseModel):
-    """Schema for each item in the list of weekly time posture"""
+    """Schema for each item in the list of weekly time posture""" 
 
     escala: str = Field(..., description="Name of the musical scale", example="C Major")
     tiempo_total_segundos: float = Field(..., description="Total time in seconds", example=36.2)

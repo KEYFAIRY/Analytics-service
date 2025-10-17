@@ -10,13 +10,7 @@ class GetWeeklyTimePostureUseCase:
     async def execute(self, id_student: str, year: int, week: int) -> List[WeeklyTimePostureDTO]:
         weekly_time_postures = await self.weekly_timep_service.get_weekly_time_posture(id_student, year, week)
         return [WeeklyTimePostureDTO(
-            id_student = posture.id_student,
-            id_scale = posture.id_scale,
             scale = posture.scale,
-            date = posture.date,
-            year = posture.year,
-            week = posture.week,
-            month = posture.month,
             time_practiced = posture.time_practiced,
             bad_posture_time = posture.bad_posture_time,
             good_posture_time = posture.good_posture_time
