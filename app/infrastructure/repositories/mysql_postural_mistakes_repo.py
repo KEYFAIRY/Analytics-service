@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from app.core.exceptions import DatabaseConnectionException, PosturalMistakesNotFoundException
@@ -18,20 +18,17 @@ class MySQLPosturalMistakesRepository(IPosturalMistakesRepository):
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
-                    select(PosturalMistakesModel.id_student,
-                           PosturalMistakesModel.id_scale,
-                           Scale.name.label('scale_name'),
+                    select(Scale.name.label('scale_name'),
                            PosturalMistakesModel.fecha,
-                           PosturalMistakesModel.anio,
-                           PosturalMistakesModel.semana,
-                           PosturalMistakesModel.mes,
-                           PosturalMistakesModel.cantidad_errores)
+                           func.sum(PosturalMistakesModel.cantidad_errores).label('cantidad_errores'))
                     .join(Scale, Scale.id == PosturalMistakesModel.id_scale)
                     .where(
                         PosturalMistakesModel.id_student == id_student,
                         PosturalMistakesModel.anio == year,
                         PosturalMistakesModel.semana == week)
-                    .order_by(PosturalMistakesModel.cantidad_errores.desc())
+                    .group_by(Scale.name,
+                              PosturalMistakesModel.fecha)
+                    .order_by(PosturalMistakesModel.fecha.asc())
                 )
                 rows = query.fetchall()
 
@@ -50,12 +47,7 @@ class MySQLPosturalMistakesRepository(IPosturalMistakesRepository):
         
     def _row_to_entity(self, row) -> PosturalMistakes:
         return PosturalMistakes(
-            id_student=row.id_student,
-            id_scale=row.id_scale,
             scale=row.scale_name,
             date=row.fecha.strftime('%Y-%m-%d') if row.fecha else '',
-            year=row.anio,
-            week=row.semana,
-            month=row.mes,
             mistake_amount=row.cantidad_errores
         )

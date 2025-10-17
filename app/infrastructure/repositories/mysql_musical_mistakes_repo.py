@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from app.core.exceptions import DatabaseConnectionException, MusicalMistakesNotFoundException
@@ -18,20 +18,17 @@ class MySQLMusicalMistakesRepository(IMusicalMistakesRepository):
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
-                    select(MusicalMistakesModel.id_student,
-                           MusicalMistakesModel.id_scale,
-                           Scale.name.label('scale_name'),
+                    select(Scale.name.label('scale_name'),
                            MusicalMistakesModel.fecha,
-                           MusicalMistakesModel.anio,
-                           MusicalMistakesModel.semana,
-                           MusicalMistakesModel.mes,
-                           MusicalMistakesModel.cantidad_errores)
+                           func.sum(MusicalMistakesModel.cantidad_errores).label('cantidad_errores'))
                     .join(Scale, Scale.id == MusicalMistakesModel.id_scale)
                     .where(
                         MusicalMistakesModel.id_student == id_student,
                         MusicalMistakesModel.anio == year,
                         MusicalMistakesModel.semana == week)
-                    .order_by(MusicalMistakesModel.cantidad_errores.desc())
+                    .group_by(Scale.name,
+                              MusicalMistakesModel.fecha)
+                    .order_by(MusicalMistakesModel.fecha.asc())
                 )
                 rows = query.fetchall()
 
@@ -50,12 +47,7 @@ class MySQLMusicalMistakesRepository(IMusicalMistakesRepository):
 
     def _row_to_entity(self, row) -> MusicalMistakes:
         return MusicalMistakes(
-            id_student=row.id_student,
-            id_scale=row.id_scale,
             scale=row.scale_name,
             date=row.fecha.strftime('%Y-%m-%d') if row.fecha else '',
-            year=row.anio,
-            week=row.semana,
-            month=row.mes,
             mistake_amount=row.cantidad_errores
         )
