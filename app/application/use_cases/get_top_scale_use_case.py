@@ -10,12 +10,6 @@ class GetTopScaleUseCase:
     async def execute(self, id_student: str, year: int, week: int) -> List[TopScaleDTO]:
         top_scales = await self.top_scale_service.get_top_scales(id_student, year, week)
         return [TopScaleDTO(
-            id_student = scale.id_student,
-            id_scale = scale.id_scale,
             scale = scale.scale,
-            date = scale.date,
-            year = scale.year,
-            week = scale.week,
-            month = scale.month,
             times_practiced = scale.times_practiced
         ) for scale in top_scales]

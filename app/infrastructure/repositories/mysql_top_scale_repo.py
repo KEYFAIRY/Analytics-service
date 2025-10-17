@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from app.core.exceptions import DatabaseConnectionException, TopScalesNotFoundException
@@ -18,20 +18,15 @@ class MySQLTopScaleRepository(ITopScaleRepository):
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
-                    select(TopScaleModel.id_student,
-                           TopScaleModel.id_scale,
-                           Scale.name.label('scale_name'),
-                           TopScaleModel.fecha,
-                           TopScaleModel.anio,
-                           TopScaleModel.semana,
-                           TopScaleModel.mes,
-                           TopScaleModel.veces_practicada)
+                    select(Scale.name.label('scale_name'),
+                           func.sum(TopScaleModel.veces_practicada).label('veces_practicada'))
                     .join(Scale, Scale.id == TopScaleModel.id_scale)
                     .where(
                         TopScaleModel.id_student == id_student,
                         TopScaleModel.anio == year,
                         TopScaleModel.semana == week)
-                    .order_by(TopScaleModel.veces_practicada.desc())
+                    .group_by(Scale.name)
+                    .order_by(func.sum(TopScaleModel.veces_practicada).desc())
                     .limit(3)  # Top 3
                 )
                 rows = query.fetchall()
@@ -51,12 +46,6 @@ class MySQLTopScaleRepository(ITopScaleRepository):
         
     def _row_to_entity(self, row) -> TopScale:
         return TopScale(
-            id_student=row.id_student,
-            id_scale=row.id_scale,
             scale=row.scale_name,
-            date=row.fecha.strftime('%Y-%m-%d') if row.fecha else '',
-            year=row.anio,
-            week=row.semana,
-            month=row.mes,
             times_practiced=row.veces_practicada
         )
