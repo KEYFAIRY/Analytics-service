@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from app.core.exceptions import DatabaseConnectionException, WeeklyNotesNotFoundException
@@ -18,21 +18,17 @@ class MySQLWeeklyNotesRepository(IWeeklyNotesRepository):
         try:
             async with DatabaseConnection().get_async_session() as session:
                 query = await session.execute(
-                    select(WeeklyNotesModel.id_student,
-                           WeeklyNotesModel.id_scale,
-                           Scale.name.label('scale_name'),
-                           WeeklyNotesModel.fecha,
-                           WeeklyNotesModel.anio,
-                           WeeklyNotesModel.semana,
-                           WeeklyNotesModel.mes,
-                           WeeklyNotesModel.notas_correctas,
-                           WeeklyNotesModel.notas_incorrectas)
+                    select(Scale.name.label('scale_name'),
+                           func.sum(WeeklyNotesModel.notas_correctas).label('notas_correctas'),
+                           func.sum(WeeklyNotesModel.notas_incorrectas).label('notas_incorrectas'))
                     .join(Scale, Scale.id == WeeklyNotesModel.id_scale)
                     .where(
                         WeeklyNotesModel.id_student == id_student,
                         WeeklyNotesModel.anio == year,
                         WeeklyNotesModel.semana == week)
-                    .order_by(WeeklyNotesModel.notas_incorrectas.desc())
+                    .group_by(Scale.name)
+                    .order_by((func.sum(WeeklyNotesModel.notas_correctas)
+                               + func.sum(WeeklyNotesModel.notas_incorrectas)).desc())
                 )
                 rows = query.fetchall()
 
@@ -52,13 +48,7 @@ class MySQLWeeklyNotesRepository(IWeeklyNotesRepository):
         
     def _row_to_entity(self, row) -> WeeklyNotes:
         return WeeklyNotes(
-            id_student=row.id_student,
-            id_scale=row.id_scale,
             scale=row.scale_name,
-            date=row.fecha.strftime('%Y-%m-%d') if row.fecha else '',
-            year=row.anio,
-            week=row.semana,
-            month=row.mes,
             right_notes=row.notas_correctas,
             wrong_notes=row.notas_incorrectas
         )
